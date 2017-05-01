@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<title>WikiSearch</title>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Bungee+Inline|Pacifico" rel="stylesheet">
+  <link rel="icon" type="image/png" href="sam.png">
+  <style>
+  .form-group{
+    margin-top: 1%;
+    margin-left: 2.5%;
+    margin-right: 2.5%;
+  }
+  img {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+    height: 3vh;
+}
+  #Hello{
+    margin-left: 2.5%;
+    margin-right: 2.5%;
+    margin-top:1%;
+    padding: 1%;
+    border-radius: 0px 15px 50px 30px;
+  }
+
+#Hello:nth-child(odd) {
+    background: #B9BCBF;
+    color: black;
+}
+
+#Hello:nth-child(even) {
+    background: #272727;
+    color: white;
+}
+  </style>
+</head>
+
+<body>
+  <div class= "text-center">
+    <h1><span style = "font-family: 'Bungee Inline', cursive;
+">Wiki</span><span style="font-family: 'Pacifico', cursive;
+">Search</span></h6>
+  </div>
+  <div class="form-group text-center">
+    <input type="text" class="form-control" id="usr" placeholder="Search">
+    <br>
+    <button type="button" class="btn" onclick= "SearchCall()" id="search">Search <img src="Search.png"></button>
+    <button type="button" class="btn" onclick="location.href='https://en.wikipedia.org/wiki/Special:Random';">Feeling Lucky?</button>
+
+  </div>
+  <div id = "results">
+
+  </div>
+  <script>
+    function SearchCall()
+    {
+      $('#results').empty();
+      searchTerm = document.getElementById('usr').value;
+      console.log(searchTerm);
+      searchTerm =searchTerm.split(' ').join('_');
+      console.log(searchTerm);
+      apiCall(searchTerm);
+    }
+
+    document.getElementById("usr")
+    .addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if (event.keyCode == 13) {
+        document.getElementById("search").click();
+    }
+    });
+
+    function apiCall(searchTerm){
+        $.getJSON("https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=1&excontinue=1&exlimit=max&gsrlimit=10&generator=search&origin=*&gsrsearch=" + searchTerm, function(data){
+        console.log(data);
+        $.each(data.query.pages, function (i) {
+          console.log(data.query.pages[i].extract);
+          intro = data.query.pages[i].extract;
+          intro = String(intro).split("</p>");
+          $('#results').append("<div id = 'Hello'><a href='https://en.wikipedia.org/?curid=" + data.query.pages[i].pageid +
+                           "' target='_blank'><h3><b>" + data.query.pages[i].title + "</b></h3></a>" + intro + "</p></div>");
+                });
+      });
+    }
+  </script>
+</body>
+
+</html>
